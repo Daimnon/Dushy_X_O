@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject _bruhPanel;
 
+    [SerializeField]
+    private AudioSource _bruhAudioSource;
+
     private int _turnCounter = 0;
 
     public bool _playerOneTurn = true, _playerTwoTurn = false;
@@ -52,6 +55,7 @@ public class GameManager : MonoBehaviour
         {
             print("Bruh");
             _bruhPanel.SetActive(true);
+            _bruhAudioSource.Play();
         }
 
         Vector3 tileTr = tile.transform.position;
