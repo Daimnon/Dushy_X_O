@@ -43,12 +43,12 @@ public class NetworkManager : MonoBehaviour
         //endPoint = new IPEndPoint(IPAddress.Parse(LocalIPAddress), ListeningPort); //this line will listen to a specific IP address
         udp = new UdpClient(endPoint);
         Debug.Log("Listening for Data...");
-        listener = new Thread(new ThreadStart(MessageHandler));
+        listener = new Thread(new ThreadStart(MessageHandeler));
         listener.IsBackground = true;
         listener.Start();
     }
 
-    void MessageHandler()
+    void MessageHandeler()
     {
         Byte[] data = new byte[0];
         while (true)
@@ -75,16 +75,13 @@ public class NetworkManager : MonoBehaviour
     private void EndUDP()
     {
         if (udp != null)
-        {
             udp.Close();
-        }
+
         if (listener != null)
-        {
             listener.Abort();
-        }
     }
 
-    public void SendMessage(string message)
+    public new void SendMessage(string message)
     {
         UdpClient send_client = new UdpClient();
         IPEndPoint send_endPoint = new IPEndPoint(IPAddress.Parse(LocalIPAddress), SendingPort);
@@ -93,6 +90,4 @@ public class NetworkManager : MonoBehaviour
         send_client.Close();
         Debug.Log("Sent message: " + message);
     }
-
-
 }

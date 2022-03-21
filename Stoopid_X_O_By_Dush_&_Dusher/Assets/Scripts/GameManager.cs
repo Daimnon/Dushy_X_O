@@ -45,19 +45,6 @@ public class GameManager : MonoBehaviour
         //draw the shape on the UI
 
         //update the other player about the shape
-        networkManager.SendMessage($"{(Vector2)tileTr}");// your job to finish it
-    }
-
-    //for debug purpouses only
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            networkManager.SendMessage("A was sent");
-        }
-        else if (Input.GetKeyDown(KeyCode.B))
-        {
-            networkManager.SendMessage("B was sent");
-        }
+        networkManager.SendMessage($"Player Placed Shape at {tile.name}: {(Vector2)tileTr}");// your job to finish it
     }
 }
