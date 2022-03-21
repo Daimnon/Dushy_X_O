@@ -10,8 +10,8 @@ using System.Threading;
 public class NetworkManager : MonoBehaviour
 {
     private string LocalIPAddress = "127.0.0.1";
-    private int ListeningPort = 40000;
-    private int SendingPort = 40001;
+    public int ListeningPort = 40000;
+    public int SendingPort = 40001;
     Thread listener;
     static Queue pQueue = Queue.Synchronized(new Queue()); //this is the message queue, it is thread safe
     static UdpClient udp;
@@ -43,12 +43,12 @@ public class NetworkManager : MonoBehaviour
         //endPoint = new IPEndPoint(IPAddress.Parse(LocalIPAddress), ListeningPort); //this line will listen to a specific IP address
         udp = new UdpClient(endPoint);
         Debug.Log("Listening for Data...");
-        listener = new Thread(new ThreadStart(MessageHandler));
+        listener = new Thread(new ThreadStart(MessageHandeler));
         listener.IsBackground = true;
         listener.Start();
     }
 
-    void MessageHandler()
+    void MessageHandeler()
     {
         Byte[] data = new byte[0];
         while (true)
@@ -75,16 +75,13 @@ public class NetworkManager : MonoBehaviour
     private void EndUDP()
     {
         if (udp != null)
-        {
             udp.Close();
-        }
+
         if (listener != null)
-        {
             listener.Abort();
-        }
     }
 
-    public void SendMessage(string message)
+    public new void SendMessage(string message)
     {
         UdpClient send_client = new UdpClient();
         IPEndPoint send_endPoint = new IPEndPoint(IPAddress.Parse(LocalIPAddress), SendingPort);
@@ -93,6 +90,4 @@ public class NetworkManager : MonoBehaviour
         send_client.Close();
         Debug.Log("Sent message: " + message);
     }
-
-
 }
