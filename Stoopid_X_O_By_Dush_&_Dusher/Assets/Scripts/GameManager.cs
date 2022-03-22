@@ -18,31 +18,27 @@ public class GameManager : MonoBehaviour
      */
     #endregion
 
-    [SerializeField]
-    private TextMeshProUGUI[] _shapes = new TextMeshProUGUI[9];
-
-    [SerializeField]
-    private GameObject _bruhPanel;
-
-    [SerializeField]
-    private AudioSource _bruhAudioSource;
+    [SerializeField] private TextMeshProUGUI[] _shapes = new TextMeshProUGUI[9];
+    [SerializeField] private GameObject _bruhPanel;
+    [SerializeField] private AudioSource _bruhAudioSource;
 
     private int _turnCounter = 0;
 
     public bool _playerOneTurn = true, _playerTwoTurn = false;
+    public NetworkManager networkManager; //don't forget to drag in inspector
 
     private void Start()
     {
         networkManager.StartUDP();
     }
 
-    public NetworkManager networkManager; //don't forget to drag in inspector
-
-    public void GotNetworkMessage (string message)
+    public static void GotNetworkMessage (string message)
     {
         Debug.Log("got network message: " + message);
         switch(message)
         {
+            case "2":
+                    break;
             //do something with the message
             //case 5:
             //Do something
@@ -51,25 +47,11 @@ public class GameManager : MonoBehaviour
 
     public void PositionClicked(Image tile)
     {
-        if (_turnCounter == 8)
-        {
-            print("Bruh");
-            _bruhPanel.SetActive(true);
-            _bruhAudioSource.Play();
-        }
-
-        Vector3 tileTr = tile.transform.position;
-
-        print($"{(Vector2)tileTr}");
-        //draw the shape on the UI
-
-
-        ChangeShape(tile);
-
-        //update the other player about the shape
-        networkManager.SendMessage($"Player Placed Shape at {tile.name}: {(Vector2)tileTr}");// your job to finish it
-
+        EndDraw();
         
+        //draw the shape on the UI
+        DrawShape(tile);
+        print($"Message Sent");
         SwitchTurn();
     }
 
@@ -102,15 +84,39 @@ public class GameManager : MonoBehaviour
         networkManager.SendingPort = 40001;
     }
 
-    private void ChangeShape(Image tile)
+    private void DrawShape(Image tile)
     {
         for (int i = 0; i < _shapes.Length; i++)
         {
             if (_shapes[i].transform.parent.name == tile.name && _playerOneTurn)
+            {
                 _shapes[i].text = "X";
 
+                //update the other player about the shape
+                //networkManager.SendMessage($"{_shapes[i].transform.parent.name}");
+                networkManager.SendMessage($"Player Placed {_shapes[i].text} at {tile.name} \n");
+                print($"{_shapes[i].transform.parent.name}");
+            }
+
             else if (_shapes[i].transform.parent.name == tile.name && _playerTwoTurn)
+            {
                 _shapes[i].text = "O";
+
+                //update the other player about the shape
+                //networkManager.SendMessage($"{_shapes[i]}");
+                networkManager.SendMessage($"Player Placed {_shapes[i].text} at {tile.name} \n");
+                print($"{_shapes[i].transform.parent.name}");
+            }
+        }
+    }
+
+    private void EndDraw()
+    {
+        if (_turnCounter == 8)
+        {
+            print("Bruh");
+            _bruhPanel.SetActive(true);
+            _bruhAudioSource.Play();
         }
     }
 }

@@ -9,15 +9,13 @@ using System.Threading;
 
 public class NetworkManager : MonoBehaviour
 {
-    private string LocalIPAddress = "127.0.0.1";
-    public int ListeningPort = 40000;
-    public int SendingPort = 40001;
-    Thread listener;
-    static Queue pQueue = Queue.Synchronized(new Queue()); //this is the message queue, it is thread safe
-    static UdpClient udp;
+    private Thread listener;
     private IPEndPoint endPoint;
-
-    public GameManager gameManager; //drag this on the inspector
+    private static Queue pQueue = Queue.Synchronized(new Queue()); //this is the message queue, it is thread safe
+    private static UdpClient udp;
+    
+    private string _localIPAddress = "127.0.0.1";
+    public int ListeningPort = 40000, SendingPort = 40001;
 
     private void Update()
     {
@@ -27,7 +25,7 @@ public class NetworkManager : MonoBehaviour
             if (pQueue.Count > 0)
             {
                 object o = pQueue.Dequeue(); //Take the olders message out of the queue
-                gameManager.GotNetworkMessage((string)o); //Send it to the game manager
+                GameManager.GotNetworkMessage((string)o); //Send it to the game manager
             }
         }
     }
@@ -48,7 +46,7 @@ public class NetworkManager : MonoBehaviour
         listener.Start();
     }
 
-    void MessageHandeler()
+    private void MessageHandeler()
     {
         Byte[] data = new byte[0];
         while (true)
@@ -84,7 +82,7 @@ public class NetworkManager : MonoBehaviour
     public new void SendMessage(string message)
     {
         UdpClient send_client = new UdpClient();
-        IPEndPoint send_endPoint = new IPEndPoint(IPAddress.Parse(LocalIPAddress), SendingPort);
+        IPEndPoint send_endPoint = new IPEndPoint(IPAddress.Parse(_localIPAddress), SendingPort);
         byte[] bytes = Encoding.ASCII.GetBytes(message);
         send_client.Send(bytes, bytes.Length, send_endPoint);
         send_client.Close();
